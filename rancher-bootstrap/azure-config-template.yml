@@ -1,0 +1,11 @@
+cloud_provider:
+  name: azure
+  cloud_config:
+    aadClientId: <CLIENTID>
+    aadClientSecret: <CLIENTSECRET>
+    location: <REGION>
+    resourceGroup: <RESOURCEGROUP>
+    subnetName: <SUBNET>
+    subscriptionId: <SUBSCRIPTIONID>
+    vnetName: <VNET>
+    tenantId: <TENANTID>
