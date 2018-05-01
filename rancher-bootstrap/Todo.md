@@ -2,7 +2,7 @@
 
 - [ ] Create a variable file for service principles, counts etc.
 
-- [ ] Create an NSG
+- [x] Create an NSG
 
 - [ ] Create Master VMs
 
