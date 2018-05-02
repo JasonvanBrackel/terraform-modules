@@ -467,7 +467,7 @@ resource "azurerm_virtual_machine" "worker-machine" {
   location                         = "${azurerm_resource_group.resourcegroup.location}"
   resource_group_name              = "${azurerm_resource_group.resourcegroup.name}"
   network_interface_ids            = ["${element(azurerm_network_interface.worker_nic.*.id, count.index)}"]
-  vm_size                          = "Standard_DS1_v2"
+  vm_size                          = "${var.worker_node_vm_size}"
   delete_os_disk_on_termination    = true
   delete_data_disks_on_termination = true
 
@@ -514,7 +514,7 @@ resource "azurerm_virtual_machine" "controlplane-machine" {
   location                         = "${azurerm_resource_group.resourcegroup.location}"
   resource_group_name              = "${azurerm_resource_group.resourcegroup.name}"
   network_interface_ids            = ["${element(azurerm_network_interface.controlplane_nic.*.id, count.index)}"]
-  vm_size                          = "Standard_DS1_v2"
+  vm_size                          = "${var.controlplane_node_vm_size}"
   delete_os_disk_on_termination    = true
   delete_data_disks_on_termination = true
 
@@ -561,7 +561,7 @@ resource "azurerm_virtual_machine" "etcd-machine" {
   location                         = "${azurerm_resource_group.resourcegroup.location}"
   resource_group_name              = "${azurerm_resource_group.resourcegroup.name}"
   network_interface_ids            = ["${element(azurerm_network_interface.etcd_nic.*.id, count.index)}"]
-  vm_size                          = "Standard_DS1_v2"
+  vm_size                          = "${var.etcd_node_vm_size}"
   delete_os_disk_on_termination    = true
   delete_data_disks_on_termination = true
 
