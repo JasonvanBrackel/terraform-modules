@@ -11,9 +11,9 @@ terraform output -json | jq '.etcd_nodes.value[]' | xargs -I{} sed -e 's/<IP>/{}
 terraform output -json | jq '.worker_nodes.value[]' | xargs -I{} sed -e 's/<IP>/{}/g' -e "s/<USER>/$admin/" -e 's/<ROLE>/worker/' -e 's/<PEM_FILE>/".\/id_rsa"/'  ./node-template.yml > worker.yml
 cat worker.yml controlplane.yml etcd.yml > nodes.yml
 sed -e '/<NODES>/ {' -e 'r nodes.yml' -e 'd' -e '}' rancher-minimal-passthrough-template.yml > cluster.yml
-wget -o rke https://github.com/rancher/rke/releases/download/v0.1.6/rke_linux-amd64
-mv ./rke_linux-amd64 rke
-chmod 700 rke
+#wget -o rke https://github.com/rancher/rke/releases/download/v0.1.6/rke_linux-amd64
+#mv ./rke_linux-amd64 rke
+#chmod 700 rke
 subscriptionid=$(terraform output -json | jq '.subscription_id.value') 
 clientid=$(terraform output -json | jq '.client_id.value') 
 clientsecret=$(terraform output -json | jq '.client_secret.value')
@@ -23,4 +23,4 @@ subnet=$(terraform output -json | jq '.subnet.value')
 vnet=$(terraform output -json | jq '.vnet.value') 
 resourcegroup=$(terraform output -json | jq '.resourcegroup.value')
 sed -e "s/<CLIENTID>/$clientid/" -e "s/<CLIENTSECRET>/$clientsecret/" -e "s/<SUBSCRIPTIONID>/$subscriptionid/" -e "s/<TENANTID>/$tenantid/" -e "s/<REGION>/$region/" -e "s/<SUBNET>/$subnet/" -e "s/<VNET>/$vnet/" -e "s/<RESOURCEGROUP>/$resourcegroup/" azure-config-template.yml >> cluster.yml
-rke up
+rke_windows-amd64.exe up

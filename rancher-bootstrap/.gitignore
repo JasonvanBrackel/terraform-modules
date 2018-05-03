@@ -1,4 +1,13 @@
+
 .terraform
 terraform.tfvars
 terraform.tfstate
 terraform.tfstate.backup
+
+cluster.yml
+controlplane.yml
+etcd.yml
+id_rsa
+nodes.yml
+worker.yml
+ssh.pub
