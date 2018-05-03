@@ -5,13 +5,14 @@ terraform output
 admin=$(terraform output -json | jq '.admin.value' | sed 's/\"//g')
 privatekeypath=$(terraform output -json | jq '.administrator_ssh_private.value' | sed 's/\"//g')
 privatekeypath2=$(echo $privatekeypath | sed 's/\//\\\//g')
-terraform output -json | jq '.controlplane_nodes.value[],.etcd_nodes.value[],.worker_nodes.value[]' | xargs -I%  ssh -oStrictHostKeyChecking=no -i $privatekeypath $admin@% 'curl https://releases.rancher.com/install-docker/17.03.sh | sh'
-terraform output -json | jq '.controlplane_nodes.value[]' | xargs -I{} sed -e 's/<IP>/{}/g' -e "s/<USER>/$admin/" -e 's/<ROLE>/controlplane/' -e "s/<PEM_FILE>/$privatekeypath2"  ./node-template.yml > controlplane.yml
-terraform output -json | jq '.etcd_nodes.value[]' | xargs -I{} sed -e 's/<IP>/{}/g' -e "s/<USER>/$admin/" -e 's/<ROLE>/etcd/'  -e "s/<PEM_FILE>/$privatekeypath2" ./node-template.yml > etcd.yml
-terraform output -json | jq '.worker_nodes.value[]' | xargs -I{} sed -e 's/<IP>/{}/g' -e "s/<USER>/$admin/" -e 's/<ROLE>/worker/'  -e "s/<PEM_FILE>/$privatekeypath2" ./node-template.yml > worker.yml
+terraform output -json | jq '.controlplane_nodes.value[],.etcd_nodes.value[],.worker_nodes.value[]' | xargs -I%  ssh -oStrictHostKeyChecking=no -i $privatekeypath $admin@% 'curl https://releases.rancher.com/install-docker/17.03.sh | sh && sudo usermod -a -G docker jvb'
+terraform output -json | jq '.controlplane_nodes.value[]' | xargs -I{} sed -e 's/<IP>/{}/g' -e "s/<USER>/$admin/" -e 's/<ROLE>/controlplane/' -e "s/<PEM_FILE>/$privatekeypath2/"  ./node-template.yml > controlplane.yml
+terraform output -json | jq '.etcd_nodes.value[]' | xargs -I{} sed -e 's/<IP>/{}/g' -e "s/<USER>/$admin/" -e 's/<ROLE>/etcd/'  -e "s/<PEM_FILE>/$privatekeypath2/" ./node-template.yml > etcd.yml
+terraform output -json | jq '.worker_nodes.value[]' | xargs -I{} sed -e 's/<IP>/{}/g' -e "s/<USER>/$admin/" -e 's/<ROLE>/worker/'  -e "s/<PEM_FILE>/$privatekeypath2/" ./node-template.yml > worker.yml
 cat worker.yml controlplane.yml etcd.yml > nodes.yml
 sed -e '/<NODES>/ {' -e 'r nodes.yml' -e 'd' -e '}' rancher-minimal-passthrough-template.yml > cluster.yml
 wget -o rke https://github.com/rancher/rke/releases/download/v0.1.6/rke_linux-amd64
+chmod 700 ./rke_linux-amd64
 subscriptionid=$(terraform output -json | jq '.subscription_id.value') 
 clientid=$(terraform output -json | jq '.client_id.value') 
 clientsecret=$(terraform output -json | jq '.client_secret.value')
