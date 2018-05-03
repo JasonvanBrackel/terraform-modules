@@ -44,7 +44,7 @@ variable "worker_node_vm_size" {
   type        = "string"
   description = "Azure VM size of the worker nodes"
 
-  default = "Standard_DS1_v2"
+  default = "Standard_DS_v2"
 }
 
 variable "controlplane_node_vm_size" {
