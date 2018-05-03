@@ -5,7 +5,7 @@ terraform output
 admin=$(terraform output -json | jq '.admin.value' | sed 's/\"//g')
 privatekeypath=$(terraform output -json | jq '.administrator_ssh_private.value' | sed 's/\"//g')
 privatekeypath2=$(echo $privatekeypath | sed 's/\//\\\//g')
-terraform output -json | jq '.controlplane_nodes.value[],.etcd_nodes.value[],.worker_nodes.value[]' | xargs -I%  ssh -oStrictHostKeyChecking=no -i $privatekeypath $admin@% 'curl https://releases.rancher.com/install-docker/17.03.sh | sh && sudo usermod -a -G docker $admin'
+terraform output -json | jq '.controlplane_nodes.value[],.etcd_nodes.value[],.worker_nodes.value[]' | xargs -I%  ssh -oStrictHostKeyChecking=no -i $privatekeypath $admin@% "curl https://releases.rancher.com/install-docker/17.03.sh | sh && sudo usermod -a -G docker $admin"
 terraform output -json | jq '.controlplane_nodes.value[]' | xargs -I{} sed -e 's/<IP>/{}/g' -e "s/<USER>/$admin/" -e 's/<ROLE>/controlplane/' -e "s/<PEM_FILE>/$privatekeypath2/"  ./node-template.yml > controlplane.yml
 terraform output -json | jq '.etcd_nodes.value[]' | xargs -I{} sed -e 's/<IP>/{}/g' -e "s/<USER>/$admin/" -e 's/<ROLE>/etcd/'  -e "s/<PEM_FILE>/$privatekeypath2/" ./node-template.yml > etcd.yml
 terraform output -json | jq '.worker_nodes.value[]' | xargs -I{} sed -e 's/<IP>/{}/g' -e "s/<USER>/$admin/" -e 's/<ROLE>/worker/'  -e "s/<PEM_FILE>/$privatekeypath2/" ./node-template.yml > worker.yml

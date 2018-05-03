@@ -1,0 +1,21 @@
+azure_authorization_terraform {
+  subscription_id = ""
+  client_id       = ""
+  client_secret   = ""
+  tenant_id       = ""
+  environment     = "public"
+}
+
+administrator_username = "user"
+
+administrator_ssh = "you ssh public key"
+
+administrator_ssh_private = "/home/user/.ssh/id_rsa"
+
+rke_worker_count = "1"
+
+rke_controlplane_count = "1"
+
+rke_etcd_count = "1"
+
+# For defaults and more variables, see the variables.tf file.
