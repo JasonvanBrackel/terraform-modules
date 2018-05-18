@@ -11,3 +11,4 @@ id_rsa
 nodes.yml
 worker.yml
 ssh.pub
+output.json
