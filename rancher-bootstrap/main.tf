@@ -556,7 +556,7 @@ resource "azurerm_virtual_machine" "controlplane-machine" {
 }
 
 resource "azurerm_virtual_machine" "etcd-machine" {
-  count                            = "${var.rke_worker_count}"
+  count                            = "${var.rke_etcd_count}"
   name                             = "etcd-${count.index}"
   location                         = "${azurerm_resource_group.resourcegroup.location}"
   resource_group_name              = "${azurerm_resource_group.resourcegroup.name}"
