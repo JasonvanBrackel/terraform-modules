@@ -4,9 +4,7 @@ nodes:
   <NODES>
 
 ingress:
-  provider: nginx
-  extra_args:
-    enable-ssl-passthrough: ""
+    provider: none
 
 addons: |-
   ---
