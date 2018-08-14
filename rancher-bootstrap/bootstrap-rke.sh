@@ -11,8 +11,11 @@ cat output.json | jq '.etcd_nodes.value[]' | xargs -I{} sed -e 's/<IP>/{}/g' -e 
 cat output.json | jq '.worker_nodes.value[]' | xargs -I{} sed -e 's/<IP>/{}/g' -e "s/<USER>/$admin/" -e 's/<ROLE>/worker/'  -e "s/<PEM_FILE>/$privatekeypath2/" ./node-template.yml > worker.yml
 cat worker.yml controlplane.yml etcd.yml > nodes.yml
 sed -e '/<NODES>/ {' -e 'r nodes.yml' -e 'd' -e '}' cluster-template.yml > cluster.yml
-wget https://github.com/rancher/rke/releases/download/v0.1.8/rke_linux-amd64
-chmod 700 ./rke_linux-amd64
+if [ ! -f ./rke_linux-amd64 ]; then
+    echo "rke not found.  Downloading from github."
+    wget https://github.com/rancher/rke/releases/download/v0.1.8/rke_linux-amd64
+    chmod 700 ./rke_linux-amd64
+fi
 subscriptionid=$(cat output.json | jq '.subscription_id.value') 
 clientid=$(cat output.json | jq '.client_id.value') 
 clientsecret=$(cat output.json | jq '.client_secret.value')
