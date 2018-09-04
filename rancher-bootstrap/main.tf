@@ -1,10 +1,10 @@
 # Configure the Azure Provider
 provider "azurerm" {
-  subscription_id = "${lookup(var.azure_authorization_terraform, "subscription_id")}"
-  client_id       = "${lookup(var.azure_authorization_terraform, "client_id")}"
-  client_secret   = "${lookup(var.azure_authorization_terraform, "client_secret")}"
-  tenant_id       = "${lookup(var.azure_authorization_terraform, "tenant_id")}"
-  environment     = "${lookup(var.azure_authorization_terraform, "environment")}"
+  subscription_id = "${lookup(var.azure_service_principal, "subscription_id")}"
+  client_id       = "${lookup(var.azure_service_principal, "client_id")}"
+  client_secret   = "${lookup(var.azure_service_principal, "client_secret")}"
+  tenant_id       = "${lookup(var.azure_service_principal, "tenant_id")}"
+  environment     = "${lookup(var.azure_service_principal, "environment")}"
 }
 
 # Create a resource group
@@ -601,3 +601,28 @@ resource "azurerm_virtual_machine" "etcd-machine" {
     }
   }
 }
+
+  # Create a Front-End Load Balancer
+  resource "azurerm_public_ip" "frontendloadbalancer_publicip" {
+    name                         = "frontendloadbalancer-publicip"
+    location                     = "${azurerm_resource_group.resourcegroup.location}"
+    resource_group_name          = "${azurerm_resource_group.resourcegroup.name}"
+    public_ip_address_allocation = "static"
+  }
+
+  resource "azurerm_lb" "frontendloadbalancer" {
+    name                = "frontendloadbalancer"
+    location            = "${azurerm_resource_group.resourcegroup.location}"
+    resource_group_name = "${azurerm_resource_group.resourcegroup.name}"
+
+    frontend_ip_configuration {
+      name                 = "PublicIPAddress"
+      public_ip_address_id = "${azurerm_public_ip.frontendloadbalancer_publicip.id}"
+    }
+  }
+
+  resource "azurerm_lb_backend_address_pool" "frontendloadbalancer_backendpool" {
+    resource_group_name = "${azurerm_resource_group.resourcegroup.name}"
+    loadbalancer_id     = "${azurerm_lb.frontendloadbalancer.id}"
+    name                = "BackEndAddressPool"
+  }

@@ -1,5 +1,5 @@
 # Authorization Variables for the Terraform Azure Provider
-variable "azure_authorization_terraform" {
+variable "azure_service_principal" {
   type        = "map"
   description = "Azure Service Principal under which Terraform will be executed."
 
@@ -24,20 +24,6 @@ variable "azure_resource_group" {
   description = "Name of the Azure Resource Group to be created for the network."
 
   default = "rancher-group"
-}
-
-# Authorization Variables for RKE
-variable "azure_authorization_rke" {
-  type        = "map"
-  description = "Azure Service Principal under which Rancher Kubernetes Engine will be executed."
-
-  default = {
-    subscription_id = ""
-    client_id       = ""
-    client_secret   = ""
-    tenant_id       = ""
-    environment     = "public"
-  }
 }
 
 variable "worker_node_vm_size" {
@@ -97,4 +83,26 @@ variable "administrator_ssh" {
 variable "administrator_ssh_private" {
   type        = "string"
   description = "The path to the SSH Private Key file."
+}
+
+# RKE Version
+variable "rke_version" {
+  type = "string"
+  description = "version of Rancher Kubernetes Engine (RKE) used to provision Kubernetes"
+
+  default = "v0.1.9"
+}
+
+# Helm Version
+variable "helm_version" {
+  type = "string"
+  description = "Version of Helm to use to provision Rancher"
+
+  default = "v2.10.0"
+}
+
+# Rancher 
+variable "rancher_hostname" {
+  type = "string"
+  description = "Resolvable DNS Name or IP Address of the Rancher Server"
 }

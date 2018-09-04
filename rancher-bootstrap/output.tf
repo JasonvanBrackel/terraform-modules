@@ -23,19 +23,19 @@ output "administrator_ssh_private" {
 }
 
 output "subscription_id" {
-  value = "${var.azure_authorization_terraform["subscription_id"]}"
+  value = "${var.azure_service_principal["subscription_id"]}"
 }
 
 output "tenant_id" {
-  value = "${var.azure_authorization_terraform["tenant_id"]}"
+  value = "${var.azure_service_principal["tenant_id"]}"
 }
 
 output "client_id" {
-  value = "${var.azure_authorization_terraform["client_id"]}"
+  value = "${var.azure_service_principal["client_id"]}"
 }
 
 output "client_secret" {
-  value = "${var.azure_authorization_terraform["client_secret"]}"
+  value = "${var.azure_service_principal["client_secret"]}"
 }
 
 output "region" {
@@ -52,4 +52,16 @@ output "subnet" {
 
 output "vnet" {
   value = "${azurerm_virtual_network.network.name}"
+}
+
+output "rke_version" {
+  value = "${var.rke_version}"
+}
+
+output "helm_version" {
+  value = "${var.helm_version}"
+}
+
+output "rancher_hostname" {
+  value = "${var.rancher_hostname}"
 }

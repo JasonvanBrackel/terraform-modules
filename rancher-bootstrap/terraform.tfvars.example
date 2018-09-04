@@ -18,4 +18,6 @@ rke_controlplane_count = "1"
 
 rke_etcd_count = "1"
 
+rancher_hostname = "example.com"
+
 # For defaults and more variables, see the variables.tf file.

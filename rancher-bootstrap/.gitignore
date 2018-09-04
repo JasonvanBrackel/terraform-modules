@@ -12,3 +12,5 @@ nodes.yml
 worker.yml
 ssh.pub
 output.json
+
+rke_linux-amd64
