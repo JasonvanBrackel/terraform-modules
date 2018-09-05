@@ -14,4 +14,6 @@
 
 - [x] Script to Run RKE
 
+- [ ] Install Tiller and Helm
+
 - [ ] Complete documentation
