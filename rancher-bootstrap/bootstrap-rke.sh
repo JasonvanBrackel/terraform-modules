@@ -10,12 +10,13 @@ private_key_path=$(cat output.json | jq '.administrator_ssh_private.value' | sed
 private_key_path2=$(echo $private_key_path | sed 's/\//\\\//g')
 rke_version=$(cat output.json | jq '.rke_version.value' | sed 's/\"//g')
 helm_version=$(cat output.json | jq '.helm_version.value' | sed 's/\"//g')
+resource_group_name=$(cat output.json | jq '.resource_group.value' | sed 's/\"//g')
 
 # Grab rancher variables
 rancher_hostname=$(cat output.json | jq '.rancher_hostname.value' | sed 's/\"//g')
 
 # Create a Service Principal 
-resource_group=$(az group show -n rke-test | jq '.id' | sed -e 's/\"//g')
+resource_group=$(az group show -n $resource_group_name  | jq '.id' | sed -e 's/\"//g')
 subscription_id=$(echo $resource_group | awk -F/ '{print $3}')
 service_principal=$(az ad sp create-for-rbac --name "$rancher_hostname" --role Contributor --scopes $resource_group --subscription $subscription_id)
 client_id=$(echo $service_principal | jq '.appId') 
@@ -86,7 +87,7 @@ else
 fi
 
 # Install Docker
-cat output.json | jq '.controlplane_nodes.value[],.etcd_nodes.value[],.worker_nodes.value[]' | xargs -I%  ssh -oStrictHostKeyChecking=no -i $private_key_path $admin@% "curl https://releases.rancher.com/install-docker/17.03.sh | sh && sudo usermod -a -G docker $admin"
+#cat output.json | jq '.controlplane_nodes.value[],.etcd_nodes.value[],.worker_nodes.value[]' | xargs -I%  ssh -oStrictHostKeyChecking=no -i $private_key_path $admin@% "curl https://releases.rancher.com/install-docker/17.03.sh | sh && sudo usermod -a -G docker $admin"
 
 # Provision Kubernetes
 ./rke_linux-amd64 up --config ./cluster.yml

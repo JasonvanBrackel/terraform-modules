@@ -1,3 +1,7 @@
+output "resource_group" {
+  value = "${var.azure_resource_group}"
+}
+
 output "etcd_nodes" {
   value = "${azurerm_public_ip.etcd_publicip.*.ip_address}"
 }
