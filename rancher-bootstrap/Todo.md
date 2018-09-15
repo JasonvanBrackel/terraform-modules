@@ -14,6 +14,8 @@
 
 - [x] Script to Run RKE
 
-- [ ] Install Tiller and Helm
+- [x] Install Tiller and Helm
+
+- [ ] Add Azure Load Balancer
 
 - [ ] Complete documentation

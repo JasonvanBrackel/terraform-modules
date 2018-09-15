@@ -2,12 +2,24 @@ output "etcd_nodes" {
   value = "${azurerm_public_ip.etcd_publicip.*.ip_address}"
 }
 
+output "etcd_node_names" {
+  value = "${azurerm_virtual_machine.etcd-machine.*.name}"
+}
+
 output "controlplane_nodes" {
   value = "${azurerm_public_ip.controlplane_publicip.*.ip_address}"
 }
 
+output "controlplane_node_names" {
+  value = "${azurerm_virtual_machine.controlplane-machine.*.name}"
+}
+
 output "worker_nodes" {
   value = "${azurerm_public_ip.worker_publicip.*.ip_address}"
+}
+
+output "worker_node_names" {
+  value = "${azurerm_virtual_machine.worker-machine.*.name}"
 }
 
 output "admin" {
@@ -20,38 +32,6 @@ output "ssh" {
 
 output "administrator_ssh_private" {
   value = "${var.administrator_ssh_private}"
-}
-
-output "subscription_id" {
-  value = "${var.azure_service_principal["subscription_id"]}"
-}
-
-output "tenant_id" {
-  value = "${var.azure_service_principal["tenant_id"]}"
-}
-
-output "client_id" {
-  value = "${var.azure_service_principal["client_id"]}"
-}
-
-output "client_secret" {
-  value = "${var.azure_service_principal["client_secret"]}"
-}
-
-output "region" {
-  value = "${azurerm_resource_group.resourcegroup.location}"
-}
-
-output "resourcegroup" {
-  value = "${azurerm_resource_group.resourcegroup.name}"
-}
-
-output "subnet" {
-  value = "${azurerm_subnet.subnet.name}"
-}
-
-output "vnet" {
-  value = "${azurerm_virtual_network.network.name}"
 }
 
 output "rke_version" {
