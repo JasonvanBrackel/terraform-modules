@@ -1,4 +1,8 @@
 #!/bin/bash
+# Variables
+email=
+environment=staging
+
 #Provision Nodes in Azure
 terraform apply -auto-approve
 terraform apply # Seems to be an issue with the azure provider where publicips aren't there.  Will research later.
@@ -14,6 +18,9 @@ resource_group_name=$(cat output.json | jq '.resource_group.value' | sed 's/\"//
 
 # Grab rancher variables
 rancher_hostname=$(cat output.json | jq '.rancher_hostname.value' | sed 's/\"//g')
+
+#Remove any existing Service Principal with the same name
+az ad app delete --id http://$rancher_hostname
 
 # Create a Service Principal 
 resource_group=$(az group show -n $resource_group_name  | jq '.id' | sed -e 's/\"//g')
@@ -87,10 +94,10 @@ else
 fi
 
 # Install Docker
-#cat output.json | jq '.controlplane_nodes.value[],.etcd_nodes.value[],.worker_nodes.value[]' | xargs -I%  ssh -oStrictHostKeyChecking=no -i $private_key_path $admin@% "curl https://releases.rancher.com/install-docker/17.03.sh | sh && sudo usermod -a -G docker $admin"
+cat output.json | jq '.controlplane_nodes.value[],.etcd_nodes.value[],.worker_nodes.value[]' | xargs -I%  ssh -oStrictHostKeyChecking=no -i $private_key_path $admin@% "curl https://releases.rancher.com/install-docker/17.03.sh | sh && sudo usermod -a -G docker $admin"
 
 # Provision Kubernetes
-./rke_linux-amd64 up --config ./cluster.yml
+./rke_linux-amd64 --debug up --config ./cluster.yml
 
 # Install Helm and Setup Tiller
 # Download Helm
@@ -127,7 +134,7 @@ export KUBECONFIG="$config_path"
 echo "NEWKUBECONFIG=$NEWKUBECONFIG"
 echo "KUBECONFIG=$KUBECONFIG"
 
-kubectl config set-context Default
+kubectl config set-context local
 
 # Setup Tiller
 kubectl --kubeconfig=$(pwd)/kube_config_cluster.yml -n kube-system create serviceaccount tiller
@@ -137,25 +144,31 @@ kubectl --kubeconfig=$(pwd)/kube_config_cluster.yml create clusterrolebinding ti
 
  cp $config_path /home/jason/snap/helm/common/kube/config
 
-helm init --service-account tiller --kube-context Default
+helm init --service-account tiller --kube-context local --wait
 
 # Install Rancher
 helm repo add rancher-stable https://releases.rancher.com/server-charts/stable
 
-sleep 10s
+sleep 15s
 
 # Optional: Install Cert-Manager if you're using self-signed certificates or Let's Encrypt certificates.
 helm install stable/cert-manager \
   --name cert-manager \
   --namespace kube-system \
-  --kube-context Default
+  --kube-context local 
+
+sleep 15s
 
 # Install Rancher
 helm install rancher-stable/rancher \
   --name rancher \
   --namespace cattle-system \
-  --set hostname=$rancher_hostname
-  --kube-context Default \
+  --set ingress.tls.source=letsEncrypt \
+  --set letsEncrypt.email=$email \
+  --set letsEncrypt.environment=$environment \
+  --set hostname=$rancher_hostname \
+  --set auditLog.level=1 \
+  --kube-context local
 
 # Cleanup
 export KUBECONFIG="$NEWKUBECONFIG"

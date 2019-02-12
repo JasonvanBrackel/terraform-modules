@@ -52,21 +52,21 @@ variable "rke_worker_count" {
   type        = "string"
   description = "Number of workers to be created by Terraform."
 
-  default = "3"
+  default = "1"
 }
 
 variable "rke_controlplane_count" {
   type        = "string"
   description = "Number of control plane nodes to be created by Terraform."
 
-  default = "3"
+  default = "1"
 }
 
 variable "rke_etcd_count" {
   type        = "string"
   description = "Number of etcd nodes to be created by Terraform."
 
-  default = "3"
+  default = "1"
 }
 
 # Administrator Credentials
@@ -90,7 +90,7 @@ variable "rke_version" {
   type = "string"
   description = "version of Rancher Kubernetes Engine (RKE) used to provision Kubernetes"
 
-  default = "v0.1.9"
+  default = "v0.1.12"
 }
 
 # Helm Version
@@ -98,7 +98,7 @@ variable "helm_version" {
   type = "string"
   description = "Version of Helm to use to provision Rancher"
 
-  default = "v2.10.0"
+  default = "v2.11.0"
 }
 
 # Rancher 
