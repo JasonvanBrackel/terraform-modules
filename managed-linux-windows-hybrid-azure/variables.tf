@@ -69,7 +69,7 @@ variable "windows_node_vm_size" {
   type        = "string"
   description = "Azure VM size of the windows worker nodes"
 
-  default = "Standard_DS2_v2"
+  default = "Standard_D8_v3"
 }
 
 variable "windows_node_image" {
