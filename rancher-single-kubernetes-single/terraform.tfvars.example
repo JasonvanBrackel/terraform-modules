@@ -1,0 +1,18 @@
+azure_service_principal {
+  client_id = "<guid>"
+  client_secret = "<guid>"
+  subscription_id = "<guid>"
+  tenant_id = "<guid>"
+  environment = "public"
+}
+
+azure_resource_group = "rancher-single"
+
+administrator_username = "admin"
+administrator_password = "really bad password"
+administrator_ssh = "ssh public key"
+administrator_ssh_keypath = "/home/<user>/.ssh/id_rsa"
+
+rancher_api_url = "https://myrancherserver.com"
+rancher_api_token = "token created for api access"
+rancher_cluster_name = "single-node-custom"
