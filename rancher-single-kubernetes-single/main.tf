@@ -114,7 +114,7 @@ resource "azurerm_network_security_group" "nsg_rancher" {
     source_port_range          = "*"
     destination_port_range     = "443"
     source_address_prefix      = "*"
-    destination_address_prefix = "35.160.43.145,35.167.242.46,52.33.59.17"
+    destination_address_prefix = "Internet"
   }
 
   security_rule {
