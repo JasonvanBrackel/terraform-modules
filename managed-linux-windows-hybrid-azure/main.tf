@@ -19,7 +19,6 @@ provider "rancher2" {
 resource "rancher2_cluster" "manager" {
   name = "${var.rancher_cluster_name}"
   description = "Custom Rancher Cluster for the RanchCast example"
-  kind = "rke"
   rke_config {
     network {
       plugin = "canal"
