@@ -21,3 +21,6 @@ rke_linux-amd64
 helm-v*-linux*.tar.gz
 kube_config_cluster.yml
 linux-amd64
+
+#RKE
+cluster.rkestate
