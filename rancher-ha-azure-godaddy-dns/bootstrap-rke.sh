@@ -3,6 +3,12 @@
 email=jason@vanbrackel.net
 environment=staging
 
+# Remove pre-existing state
+rm terraform.tfstate
+rm terraform.tfstate.backup
+rm cluster.rkestate
+rm kube_config_cluster.yml
+
 #Provision Nodes in Azure
 terraform apply -auto-approve
 terraform apply -auto-approve # Seems to be an issue with the azure provider where publicips aren't there.  Will research later.
@@ -100,7 +106,7 @@ else
 fi
 
 # Provision Kubernetes
-./rke_linux-amd64 --debug up --config ./cluster.yml
+./rke_linux-amd64 up
 
 # Install Helm and Setup Tiller
 # Download Helm
