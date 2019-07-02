@@ -2,18 +2,10 @@
 
 This module can be used to standup a Rancher cluster on Azure IaaS, not Azure Kubernetes Service (AKS)).  This would be a scenario where you wanted fine grained control of Kubernetes Cluster, or features that are not available from AKS.
 
-## Warning
-
-This module is a working in progress.  The Load Balancer components are not yet completed and will have to be compeleted after the fact.  After this process runs successfully you will have to
-
-- Finish settting up the Azure Front End Load Balancer.
-- DNS Configuration from your hostname to the Azure Front End Load Balancer.
-
-## Future work
- - Completion of the Front End Load Balancer
- - Integration with Azure DNS
-
 ## Prerequisites
+This example uses a GoDaddy Host.  Feel free to remove that or integrate with your own DNS provider.  For the GoDaddy Terraform initialization see https://github.com/n3integration/terraform-godaddy
+
+* You must use Terraform 0.11.x.  There are a number of issues in 0.12 and some syntax changes that cause this to fail *
 
 ### Azure AD Service Principal
 
@@ -24,7 +16,8 @@ This Terraform module requires the use of an Azure Active Directory (Azure AD) S
 All of the variables for this module are set via terraform in the terraform.tfvars file.  An example file [terraform.tfvars.example](terraform.tfvars.example) has been provided as reference.
 
 ## Running
-
+Create Azure Service Principal
+Setup variables file
 ```bash
 ./bootstrap-rke.sh
 ```
@@ -45,8 +38,7 @@ All of the variables for this module are set via terraform in the terraform.tfva
 - Check for requested RKE version and downloads it if needed.
 - Installs Docker on each node.
 - Check for Helm and downloads the requested version of Helm if needed.
-- Updates the users kubeconfig file to work with this platform.
 - Installs tiller and configured tiller RBAC.
 - Installs Rancher.
 - Installs cert-manager.
-- Cleans up Kubeconfig.
+- Sets up GoDaddy CNAME to redirect to Azure's DNS

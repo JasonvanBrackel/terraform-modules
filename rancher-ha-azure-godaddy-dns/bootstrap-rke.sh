@@ -1,11 +1,11 @@
 #!/bin/bash
 # Variables
-email=
+email=jason@vanbrackel.net
 environment=staging
 
 #Provision Nodes in Azure
 terraform apply -auto-approve
-terraform apply # Seems to be an issue with the azure provider where publicips aren't there.  Will research later.
+terraform apply -auto-approve # Seems to be an issue with the azure provider where publicips aren't there.  Will research later.
 terraform output -json > output.json
 
 # Grab ssh variables
@@ -36,11 +36,13 @@ if [ -f ./etcd.yml ]; then
 fi
 
 ips=$(cat output.json | jq '.etcd_nodes.value | @csv' | sed -e 's/\\//g' -e 's/\"//g') 
+privateips=$(cat output.json | jq '.etcd_node_privateips.value | @csv' | sed -e 's/\\//g' -e 's/\"//g') 
 
 index=1
 for node in $(cat output.json | jq '.etcd_node_names.value[]'); do
     ip=$(echo $ips | awk -F, -v i="$index" '{print $i}')
-    sed -e "s/<IP>/$ip/g" -e "s/<USER>/$admin/" -e 's/<ROLE>/etcd/'  -e "s/<PEM_FILE>/$private_key_path2/" -e "s/<HOSTNAME>/$node/" ./node-template.yml >> etcd.yml
+    privateip=$(echo $privateips | awk -F, -v i="$index" '{print $i'})
+    sed -e "s/<PUBLICIP>/$ip/g" -e "s/<PRIVATEIP>/$privateip/g" -e "s/<USER>/$admin/" -e 's/<ROLE>/etcd/'  -e "s/<PEM_FILE>/$private_key_path2/" -e "s/<HOSTNAME>/$node/" ./node-template.yml >> etcd.yml
     index=$(expr $index + 1)
 done
 
@@ -49,11 +51,13 @@ if [ -f ./controlplane.yml ]; then
 fi
 
 ips=$(cat output.json | jq '.controlplane_nodes.value | @csv' | sed -e 's/\\//g' -e 's/\"//g') 
+privateips=$(cat output.json | jq '.controlplane_node_privateips.value | @csv' | sed -e 's/\\//g' -e 's/\"//g')
 
 index=1
 for node in $(cat output.json | jq '.controlplane_node_names.value[]'); do
     ip=$(echo $ips | awk -F, -v i="$index" '{print $i}')
-    sed -e "s/<IP>/$ip/g" -e "s/<USER>/$admin/" -e 's/<ROLE>/controlplane/'  -e "s/<PEM_FILE>/$private_key_path2/" -e "s/<HOSTNAME>/$node/" ./node-template.yml >> controlplane.yml
+    privateip=$(echo $privateips | awk -F, -v i="$index" '{print $i'})
+    sed -e "s/<PUBLICIP>/$ip/g" -e "s/<PRIVATEIP>/$privateip/g" -e "s/<USER>/$admin/" -e 's/<ROLE>/controlplane/'  -e "s/<PEM_FILE>/$private_key_path2/" -e "s/<HOSTNAME>/$node/" ./node-template.yml >> controlplane.yml
     index=$(expr $index + 1)
 done
 
@@ -62,11 +66,13 @@ if [ -f ./worker.yml ]; then
 fi
 
 ips=$(cat output.json | jq '.worker_nodes.value | @csv' | sed -e 's/\\//g' -e 's/\"//g') 
+privateips=$(cat output.json | jq '.worker_node_privateips.value | @csv' | sed -e 's/\\//g' -e 's/\"//g')
 
 index=1
 for node in $(cat output.json | jq '.worker_node_names.value[]'); do
     ip=$(echo $ips | awk -F, -v i="$index" '{print $i}')
-    sed -e "s/<IP>/$ip/g" -e "s/<USER>/$admin/" -e 's/<ROLE>/worker/'  -e "s/<PEM_FILE>/$private_key_path2/" -e "s/<HOSTNAME>/$node/" ./node-template.yml >> worker.yml
+    privateip=$(echo $privateips | awk -F, -v i="$index" '{print $i'})
+    sed -e "s/<PUBLICIP>/$ip/g" -e "s/<PRIVATEIP>/$privateip/g" -e "s/<USER>/$admin/" -e 's/<ROLE>/worker/'  -e "s/<PEM_FILE>/$private_key_path2/" -e "s/<HOSTNAME>/$node/" ./node-template.yml >> worker.yml
     index=$(expr $index + 1)
 done
 
@@ -74,7 +80,7 @@ done
 # Grab Azure Cloud Configuration Provider Variables
 cat worker.yml controlplane.yml etcd.yml > nodes.yml
 sed -e '/<NODES>/ {' -e 'r nodes.yml' -e 'd' -e '}' cluster-template.yml > cluster.yml
-sed -e "s/<TENANTID>/$tenant_id/" -e "s/<SUBSCRIPTIONID>/$subscription_id/" -e "s/<CLIENTID>/$client_id/" -e "s/<CLIENTSECRET>/$client_secret/" azure-config-template.yml >> cluster.yml
+sed -e "s/<TENANTID>/$tenant_id/" -e "s/<SUBSCRIPTIONID>/\"$subscription_id\"/" -e "s/<CLIENTID>/$client_id/" -e "s/<CLIENTSECRET>/$client_secret/" azure-config-template.yml >> cluster.yml
 
 # Grab RKE
 if [ ! -f ./rke_linux-amd64 ]; then
@@ -92,9 +98,6 @@ else
         chmod 700 ./rke_linux-amd64
     fi
 fi
-
-# Install Docker
-cat output.json | jq '.controlplane_nodes.value[],.etcd_nodes.value[],.worker_nodes.value[]' | xargs -I%  ssh -oStrictHostKeyChecking=no -i $private_key_path $admin@% "curl https://releases.rancher.com/install-docker/17.03.sh | sh && sudo usermod -a -G docker $admin"
 
 # Provision Kubernetes
 ./rke_linux-amd64 --debug up --config ./cluster.yml
@@ -120,31 +123,14 @@ fi
 
 config_path="$(pwd)/kube_config_cluster.yml"
 
-if [[ $KUBECONFIG = *"$config_path"* ]]; then
-    echo "KUBECONFIG contains $config_path. Continuing."
-    export NEWKUBECONFIG="$KUBECONFIG"
-else
-    echo "Adding $config_path to KUBECONFIG."
-    export NEWKUBECONFIG="$KUBECONFIG:$config_path"
-fi
-
-echo "Temporarily chaning the KUBECONFIG file.  If something goes wrong manually change it back.  It's saved as a variable called NEWKUBECONFIG."
-export KUBECONFIG="$config_path"
-
-echo "NEWKUBECONFIG=$NEWKUBECONFIG"
-echo "KUBECONFIG=$KUBECONFIG"
-
-kubectl config set-context local
 
 # Setup Tiller
-kubectl --kubeconfig=$(pwd)/kube_config_cluster.yml -n kube-system create serviceaccount tiller
-kubectl --kubeconfig=$(pwd)/kube_config_cluster.yml create clusterrolebinding tiller \
+kubectl --kubeconfig="$config_path" -n kube-system create serviceaccount tiller
+kubectl --kubeconfig="$config_path" create clusterrolebinding tiller \
   --clusterrole cluster-admin \
   --serviceaccount=kube-system:tiller
 
- cp $config_path /home/jason/snap/helm/common/kube/config
-
-helm init --service-account tiller --kube-context local --wait
+helm init --service-account tiller --kube-context local --kubeconfig "$config_path" --wait
 
 # Install Rancher
 helm repo add rancher-stable https://releases.rancher.com/server-charts/stable
@@ -155,6 +141,8 @@ sleep 15s
 helm install stable/cert-manager \
   --name cert-manager \
   --namespace kube-system \
+  --version "v0.5.2" \
+  --kubeconfig "$config_path" \
   --kube-context local 
 
 sleep 15s
@@ -163,12 +151,12 @@ sleep 15s
 helm install rancher-stable/rancher \
   --name rancher \
   --namespace cattle-system \
-  --set ingress.tls.source=letsEncrypt \
-  --set letsEncrypt.email=$email \
-  --set letsEncrypt.environment=$environment \
-  --set hostname=$rancher_hostname \
-  --set auditLog.level=1 \
-  --kube-context local
-
-# Cleanup
-export KUBECONFIG="$NEWKUBECONFIG"
+  --kube-context local \
+  --kubeconfig "$config_path" \
+  --set ingress.tls.source="letsEncrypt" \
+  --set letsEncrypt.email="$email" \
+  --set letsEncrypt.environment="$environment" \
+  --set hostname="$rancher_hostname" \
+  --set auditLog.level="1" \
+  --set addLocal="true"
+  

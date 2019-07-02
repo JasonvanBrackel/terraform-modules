@@ -2,7 +2,7 @@ nodes:
   <NODES>
 
 network:
-  plugin: calico
+  plugin: canal
 
 ingress:
   provider: nginx
