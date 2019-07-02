@@ -48,28 +48,28 @@ variable "controlplane_node_vm_size" {
   type        = "string"
   description = "Azure VM size of the control plane nodes"
 
-  default = "Standard_DS2_v2"
+  default = "Standard_D2_v3"
 }
 
 variable "etcd_node_vm_size" {
   type        = "string"
   description = "Azure VM size of the etcd nodes"
 
-  default = "Standard_DS2_v2"
+  default = "Standard_D2_v3"
 }
 
 variable "worker_node_vm_size" {
   type        = "string"
   description = "Azure VM size of the etcd nodes"
 
-  default = "Standard_DS2_v2"
+  default = "Standard_D2_v3"
 }
 
 variable "windows_node_vm_size" {
   type        = "string"
   description = "Azure VM size of the windows worker nodes"
 
-  default = "Standard_D8_v3"
+  default = "Standard_D4_v3"
 }
 
 variable "windows_node_image" {

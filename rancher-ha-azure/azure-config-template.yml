@@ -1,0 +1,7 @@
+cloud_provider:
+  name: azure
+  azureCloudProvider:
+    tenantId: <TENANTID>
+    subscriptionId: <SUBSCRIPTIONID>
+    aadClientId: <CLIENTID>
+    aadClientSecret: <CLIENTSECRET>

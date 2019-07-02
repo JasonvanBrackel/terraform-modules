@@ -1,0 +1,26 @@
+# Terraform 
+output.json
+.terraform
+terraform.tfvars
+terraform.tfstate
+terraform.tfstate.backup
+.terraform.tfstate.lock.info
+
+# Template files
+cluster.yml
+controlplane.yml
+etcd.yml
+nodes.yml
+worker.yml
+
+# ssh
+ssh.pub
+
+# Binaries
+rke_linux-amd64
+helm-v*-linux*.tar.gz
+kube_config_cluster.yml
+linux-amd64
+
+#RKE
+cluster.rkestate

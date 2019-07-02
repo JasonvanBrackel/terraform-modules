@@ -1,0 +1,37 @@
+# This is the Azure AD Service Princpal required to perform the operations on behalf of Terraform
+azure_service_principal = {
+  subscription_id = ""
+  client_id       = ""
+  client_secret   = ""
+  tenant_id       = ""
+  environment     = "public"
+}
+
+# Azure Resource Group
+azure_resource_group="rke-group"
+
+# Administrator username of the nodes that Terraform will create.
+administrator_username = "admin"
+
+# SSH Public key for the aforementioned adminstrator.
+administrator_ssh = "ssh public key"
+
+# Path the the private key to connect to the nodes created by Terraform.  This will be used by RKE to setup Docker and Kubernetes.
+administrator_ssh_private = "/home/user/.ssh/id_rsa"
+
+# Number of worker nodes to be created.
+rke_worker_count = "1"
+
+# Number of control plane (master) nodes to be created.
+rke_controlplane_count = "1"
+
+# Number of etc nodes to be created.
+rke_etcd_count = "1"
+
+# DNS Prefix for the Azure Load Balancer
+loadbalancer_dns_label = "rancherexamplecom"
+
+# Let's encrypt settings
+letsencrypt_email = "youraddress@example.com"
+
+letsencrypt_environment = "staging"
