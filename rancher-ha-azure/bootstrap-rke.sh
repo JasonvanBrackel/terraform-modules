@@ -137,8 +137,6 @@ helm init --service-account tiller --kube-context local --kubeconfig "$config_pa
 # Install Rancher
 helm repo add rancher-stable https://releases.rancher.com/server-charts/stable
 
-sleep 15s
-
 # Optional: Install Cert-Manager if you're using self-signed certificates or Let's Encrypt certificates.
 helm install stable/cert-manager \
   --name cert-manager \
@@ -148,7 +146,6 @@ helm install stable/cert-manager \
   --kube-context local \
   --wait
 
-sleep 15s
 
 # Install Rancher
 helm install rancher-stable/rancher \
