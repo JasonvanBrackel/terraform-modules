@@ -1,0 +1,6 @@
+  - address: <PUBLICIP>
+    internal_address: <PRIVATEIP>
+    hostname_override: <HOSTNAME>
+    user: <USER>
+    role: [<ROLE>]
+    ssh_key_path: <PEM_FILE>

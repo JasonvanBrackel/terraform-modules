@@ -31,13 +31,13 @@ rke_etcd_count = "1"
 # Hostname of the rancher cluster.  This will be used by an Azure Load Balancer to route traffic.
 rancher_hostname = "rancher.example.com"
 
-# Subdomain of the rancher cluster, this is used to configure Go Daddy
-rancher_subdomain = "rancher"
-
 # DNS Prefix for the Azure Load Balancer
 loadbalancer_dns_label = "rancherexamplecom"
 
-#Go Daddy
-godaddy_key = "key"
-godaddy_secret = "password"
-godaddy_domain = "example.com"
+# Cloudflare
+cloudflare_email = "your@example.com"
+cloudflare_token = "apitoken"
+
+# Let's Encrypt Settings
+letsencrypt_email = "your@example.com"
+letsencrypt_environment = "production"
