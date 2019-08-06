@@ -4,7 +4,7 @@ variable "rke_version" {
   type = "string"
   description = "version of Rancher Kubernetes Engine (RKE) used to provision Kubernetes"
 
-  default = "v0.2.4"
+  default = "v0.2.6"
 }
 
 # Helm Version
@@ -12,7 +12,7 @@ variable "helm_version" {
   type = "string"
   description = "Version of Helm to use to provision Rancher"
 
-  default = "v2.14.1"
+  default = "v2.14.2"
 }
 
 # Docker Version
