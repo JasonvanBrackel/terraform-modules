@@ -33,7 +33,7 @@ az ad app delete --id http://$rancher_hostname
 # Create a Service Principal 
 resource_group=$(az group show -n $resource_group_name  | jq '.id' | sed -e 's/\"//g')
 subscription_id=$(echo $resource_group | awk -F/ '{print $3}')
-service_principal=$(az ad sp create-for-rbac --name "$rancher_hostname" --role Contributor --scopes $resource_group --subscription $subscription_id)
+service_principal=$(az ad sp create-for-rbac --name "$rancher_hostname" --role Contributor --scopes $resource_group)
 client_id=$(echo $service_principal | jq '.appId') 
 tenant_id=$(echo $service_principal | jq '.tenant')
 client_secret=$(echo $service_principal | jq '.password')
@@ -138,10 +138,10 @@ kubectl --kubeconfig="$config_path" create clusterrolebinding tiller \
   --clusterrole cluster-admin \
   --serviceaccount=kube-system:tiller
 
-# helm init --service-account tiller --kube-context local --kubeconfig "$config_path" --wait
+helm init --service-account tiller --kube-context local --kubeconfig "$config_path" --wait
 
-# # Install Rancher
-# #helm repo add rancher-stable https://releases.rancher.com/server-charts/stable
+# Install Rancher
+helm repo add rancher-stable https://releases.rancher.com/server-charts/stable
 helm repo add rancher-alpha https://releases.rancher.com/server-charts/alpha
 helm repo update
 
@@ -155,8 +155,8 @@ helm install stable/cert-manager \
   --wait
 
 # Install Rancher
-helm install rancher-alpha/rancher \
-  --version 2.3.0-alpha5 \
+helm install rancher-stable/rancher \
+  --version v2.2.6 \
   --name rancher \
   --namespace cattle-system \
   --kube-context local \
@@ -167,3 +167,4 @@ helm install rancher-alpha/rancher \
   --set hostname="$rancher_hostname" \
   --set auditLog.level="1" \
   --set addLocal="true" \
+  --wait

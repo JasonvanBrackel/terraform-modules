@@ -12,7 +12,7 @@ variable "helm_version" {
   type = "string"
   description = "Version of Helm to use to provision Rancher"
 
-  default = "v2.14.2"
+  default = "v2.14.3"
 }
 
 # Docker Version

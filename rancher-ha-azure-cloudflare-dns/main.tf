@@ -721,5 +721,5 @@ resource "cloudflare_record" "domain" {
   value  = "${azurerm_public_ip.frontendloadbalancer_publicip.ip_address}"
   type   = "A"
   ttl    = "1"
-  proxied = "true"
+  proxied = "false"
 }
