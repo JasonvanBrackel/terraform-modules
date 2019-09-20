@@ -582,6 +582,7 @@ resource "azurerm_virtual_machine" "worker-machine" {
     ]
 
     connection {
+      host     = azurerm_public_ip.worker_publicip[count.index].publicIp
       type     = "ssh"
       user     = "${var.administrator_username}"
       private_key = "${file("${var.administrator_ssh_private}")}"
@@ -641,6 +642,7 @@ resource "azurerm_virtual_machine" "controlplane-machine" {
     ]
 
     connection {
+      host     = azurerm_public_ip.controlplane_publicip[count.index].publicIp
       type     = "ssh"
       user     = "${var.administrator_username}"
       private_key = "${file("${var.administrator_ssh_private}")}"
@@ -700,6 +702,7 @@ resource "azurerm_virtual_machine" "etcd-machine" {
     ]
 
     connection {
+      host     = azurerm_public_ip.etcd_publicip[count.index].publicIp
       type     = "ssh"
       user     = "${var.administrator_username}"
       private_key = "${file("${var.administrator_ssh_private}")}"

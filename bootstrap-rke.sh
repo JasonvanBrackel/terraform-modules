@@ -5,6 +5,8 @@ rm terraform.tfstate.backup
 rm cluster.rkestate
 rm kube_config_cluster.yml
 
+set -e
+
 #Provision Nodes in Azure
 terraform apply -auto-approve
 terraform apply -auto-approve # Seems to be an issue with the azure provider where publicips aren't there.  Will research later.
@@ -156,7 +158,7 @@ helm install stable/cert-manager \
 
 # Install Rancher
 helm install rancher-stable/rancher \
-  --version v2.2.6 \
+  --version v2.2.8 \
   --name rancher \
   --namespace cattle-system \
   --kube-context local \
