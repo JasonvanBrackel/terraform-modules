@@ -725,7 +725,7 @@ resource "azurerm_virtual_machine" "windows_worker_machine" {
     ]
 
     connection {
-      host     = azurerm_public_ip.windows_worker_publicip[count.index].publicIp
+      host     = azurerm_public_ip.windows_worker_publicip[count.index].ip_address
       type     = "winrm"
       port     = 5985
       https    = false
@@ -789,7 +789,7 @@ resource "azurerm_virtual_machine" "worker_machine" {
     ]
 
     connection {
-      host     = azurerm_public_ip.worker_publicip[count.index].publicIp
+      host     = azurerm_public_ip.worker_publicip[count.index].ip_address
       type     = "ssh"
       user     = "${var.administrator_username}"
       private_key = "${file("${var.administrator_ssh_keypath}")}"
@@ -850,7 +850,7 @@ resource "azurerm_virtual_machine" "controlplane_machine" {
     ]
 
     connection {
-      host     = azurerm_public_ip.controlplane_publicip[count.index].publicIp
+      host     = azurerm_public_ip.controlplane_publicip[count.index].ip_address
       type     = "ssh"
       user     = "${var.administrator_username}"
       private_key = "${file("${var.administrator_ssh_keypath}")}"
@@ -911,7 +911,7 @@ resource "azurerm_virtual_machine" "etcd_machine" {
     ]
 
     connection {
-      host     = azurerm_public_ip.etcd_publicip[count.index].publicIp
+      host     = azurerm_public_ip.etcd_publicip[count.index].ip_address
       type     = "ssh"
       user     = "${var.administrator_username}"
       private_key = "${file("${var.administrator_ssh_keypath}")}"

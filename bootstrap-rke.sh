@@ -9,7 +9,6 @@ set -e
 
 #Provision Nodes in Azure
 terraform apply -auto-approve
-terraform apply -auto-approve # Seems to be an issue with the azure provider where publicips aren't there.  Will research later.
 terraform output -json > output.json
 
 # Grab ssh variables
@@ -137,24 +136,29 @@ config_path="$(pwd)/kube_config_cluster.yml"
 # Setup Tiller
 kubectl --kubeconfig="$config_path" -n kube-system create serviceaccount tiller
 kubectl --kubeconfig="$config_path" create clusterrolebinding tiller \
-  --clusterrole cluster-admin \
-  --serviceaccount=kube-system:tiller
+        --clusterrole cluster-admin \
+        --serviceaccount=kube-system:tiller
 
 helm init --service-account tiller --kube-context local --kubeconfig "$config_path" --wait
 
-# Install Rancher
 helm repo add rancher-stable https://releases.rancher.com/server-charts/stable
 helm repo add rancher-alpha https://releases.rancher.com/server-charts/alpha
+helm repo add jetstack https://charts.jetstack.io
 helm repo update
 
 # Install Cert-Manager if you're using self-signed certificates or Let's Encrypt certificates.
-helm install stable/cert-manager \
+kubectl --kubeconfig="$config_path" apply -f https://raw.githubusercontent.com/jetstack/cert-manager/release-0.9/deploy/manifests/00-crds.yaml
+kubectl --kubeconfig="$config_path" create namespace cert-manager
+kubectl --kubeconfig="$config_path" label namespace cert-manager certmanager.k8s.io/disable-validation=true
+
+helm install \
   --name cert-manager \
-  --namespace kube-system \
-  --version "v0.5.2" \
-  --kubeconfig "$config_path" \
+  --namespace cert-manager \
   --kube-context local \
-  --wait
+  --kubeconfig "$config_path" \
+  --version v0.9.1 \
+  --wait \
+  jetstack/cert-manager
 
 # Install Rancher
 helm install rancher-stable/rancher \

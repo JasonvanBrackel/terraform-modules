@@ -367,7 +367,7 @@ resource "azurerm_public_ip" "worker_publicip" {
   name                         = "worker-publicIp-${count.index}"
   location                     = "${azurerm_resource_group.resourcegroup.location}"
   resource_group_name          = "${azurerm_resource_group.resourcegroup.name}"
-  allocation_method = "Dynamic"
+  allocation_method = "Static"
 }
 
 resource "azurerm_public_ip" "controlplane_publicip" {
@@ -375,7 +375,7 @@ resource "azurerm_public_ip" "controlplane_publicip" {
   name                         = "controlplane-publicIp-${count.index}"
   location                     = "${azurerm_resource_group.resourcegroup.location}"
   resource_group_name          = "${azurerm_resource_group.resourcegroup.name}"
-  allocation_method = "Dynamic"
+  allocation_method = "Static"
 }
 
 resource "azurerm_public_ip" "etcd_publicip" {
@@ -383,7 +383,7 @@ resource "azurerm_public_ip" "etcd_publicip" {
   name                         = "etcd-publicIp-${count.index}"
   location                     = "${azurerm_resource_group.resourcegroup.location}"
   resource_group_name          = "${azurerm_resource_group.resourcegroup.name}"
-  allocation_method = "Dynamic"
+  allocation_method = "Static"
 }
 
 resource "azurerm_network_interface" "worker_nic" {
@@ -582,7 +582,7 @@ resource "azurerm_virtual_machine" "worker-machine" {
     ]
 
     connection {
-      host     = azurerm_public_ip.worker_publicip[count.index].publicIp
+      host     = azurerm_public_ip.worker_publicip[count.index].ip_address
       type     = "ssh"
       user     = "${var.administrator_username}"
       private_key = "${file("${var.administrator_ssh_private}")}"
@@ -642,7 +642,7 @@ resource "azurerm_virtual_machine" "controlplane-machine" {
     ]
 
     connection {
-      host     = azurerm_public_ip.controlplane_publicip[count.index].publicIp
+      host     = azurerm_public_ip.controlplane_publicip[count.index].ip_address
       type     = "ssh"
       user     = "${var.administrator_username}"
       private_key = "${file("${var.administrator_ssh_private}")}"
@@ -702,7 +702,7 @@ resource "azurerm_virtual_machine" "etcd-machine" {
     ]
 
     connection {
-      host     = azurerm_public_ip.controlplane_publicip[count.index].publicIp
+      host     = azurerm_public_ip.controlplane_publicip[count.index].ip_address
       type     = "ssh"
       user     = "${var.administrator_username}"
       private_key = "${file("${var.administrator_ssh_private}")}"
